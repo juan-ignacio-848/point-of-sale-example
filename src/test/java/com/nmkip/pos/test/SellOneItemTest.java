@@ -1,6 +1,5 @@
 package com.nmkip.pos.test;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import static junit.framework.TestCase.assertEquals;
@@ -25,6 +24,15 @@ public class SellOneItemTest {
         sale.onBarcode("23456");
 
         assertEquals("$12.50", display.getText());
+    }
+
+    @Test
+    public void productNotFound() {
+        final Display display = new Display();
+        final Sale sale = new Sale(display);
+
+        sale.onBarcode("99999");
+        assertEquals("Product not found for 99999", display.getText());
     }
 
     public static class Display {
@@ -52,6 +60,8 @@ public class SellOneItemTest {
                 display.setText("$7.95");
             } else if("23456".equals(barcode)){
                 display.setText("$12.50");
+            } else {
+                display.setText("Product not found for 99999");
             }
         }
     }
