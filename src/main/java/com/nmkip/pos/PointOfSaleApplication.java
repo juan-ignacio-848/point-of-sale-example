@@ -1,4 +1,4 @@
-package com.nmkip.pointofsale;
+package com.nmkip.pos;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
