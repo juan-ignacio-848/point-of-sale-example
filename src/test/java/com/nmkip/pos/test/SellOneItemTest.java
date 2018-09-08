@@ -16,7 +16,10 @@ public class SellOneItemTest {
     @Before
     public void setUp() {
         display = new Display();
-        sale = new Sale(display);
+        sale = new Sale(display, new HashMap<String, String>() {{
+            put("12345", "$7.95");
+            put("23456", "$12.50");
+        }});
     }
 
     @Test
@@ -64,12 +67,9 @@ public class SellOneItemTest {
         private Display display;
         private Map<String, String> pricesByBarcode;
 
-        public Sale(Display display) {
+        public Sale(Display display, Map<String, String> pricesByBarcode) {
             this.display = display;
-            this.pricesByBarcode = new HashMap<String, String>() {{
-                put("12345", "$7.95");
-                put("23456", "$12.50");
-            }};
+            this.pricesByBarcode = pricesByBarcode;
         }
 
         public void onBarcode(String barcode) {
