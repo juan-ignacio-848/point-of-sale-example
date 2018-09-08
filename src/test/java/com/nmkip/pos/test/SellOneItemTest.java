@@ -14,7 +14,7 @@ public class SellOneItemTest {
     private Sale sale;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         display = new Display();
         sale = new Sale(display);
     }
@@ -62,26 +62,27 @@ public class SellOneItemTest {
 
     public static class Sale {
         private Display display;
+        private Map<String, String> pricesByBarcode;
 
         public Sale(Display display) {
             this.display = display;
+            this.pricesByBarcode = new HashMap<String, String>() {{
+                put("12345", "$7.95");
+                put("23456", "$12.50");
+            }};
         }
 
         public void onBarcode(String barcode) {
             if ("".equals(barcode)) {
                 display.setText("Scanning error: empty barcode");
             } else {
-                // introduce look up table
-                final Map<String, String> pricesByBarcode = new HashMap<String, String> () {{
-                    put("12345", "$7.95");
-                    put("23456", "$12.50");
-                }};
                 if (pricesByBarcode.containsKey(barcode)) {
                     display.setText(pricesByBarcode.get(barcode));
                 } else {
                     display.setText("Product not found for " +
                             barcode);
                 }
+
             }
         }
     }
