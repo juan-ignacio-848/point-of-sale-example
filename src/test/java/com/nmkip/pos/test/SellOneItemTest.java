@@ -45,6 +45,8 @@ public class SellOneItemTest {
 
     @Test
     public void emptyBarcode() {
+        final Sale sale = new Sale(display, null);
+
         sale.onBarcode("");
 
         assertEquals("Scanning error: empty barcode", display.getText());
@@ -73,6 +75,7 @@ public class SellOneItemTest {
         }
 
         public void onBarcode(String barcode) {
+            // SMELL Refused bequest; move this up the call stack?
             if ("".equals(barcode)) {
                 display.setText("Scanning error: empty barcode");
                 return;
