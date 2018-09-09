@@ -3,6 +3,7 @@ package com.nmkip.pos.test;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.text.NumberFormat;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -16,9 +17,9 @@ public class SellOneItemTest {
     @Before
     public void setUp() {
         display = new Display();
-        sale = new Sale(display, new Catalog(new HashMap<String, String>() {{
-            put("12345", "$7.95");
-            put("23456", "$12.50");
+        sale = new Sale(display, new Catalog(new HashMap<String, Double>() {{
+            put("12345", 7.95);
+            put("23456", 12.50);
         }}));
     }
 
@@ -55,13 +56,18 @@ public class SellOneItemTest {
     public static class Display {
 
         private String text;
+        private final NumberFormat currencyFormatter;
+
+        public Display() {
+            currencyFormatter = NumberFormat.getCurrencyInstance();
+        }
 
         public String getText() {
             return text;
         }
 
-        public void displayPrice(String priceAsText) {
-            this.text = priceAsText;
+        public void displayPrice(Double price) {
+            this.text = currencyFormatter.format(price);
         }
 
         public void displayProductNotFoundMessage(String barcode) {
@@ -90,11 +96,11 @@ public class SellOneItemTest {
                 return;
             }
 
-            final String priceAsText = catalog.findProduct(barcode);
-            if (priceAsText == null) {
+            final Double price = catalog.findPrice(barcode);
+            if (price == null) {
                 display.displayProductNotFoundMessage(barcode);
             } else {
-                display.displayPrice(priceAsText);
+                display.displayPrice(price);
             }
 
         }
@@ -102,13 +108,13 @@ public class SellOneItemTest {
     }
 
     public static class Catalog {
-        private final Map<String, String> pricesByBarcode;
+        private final Map<String, Double> pricesByBarcode;
 
-        public Catalog(Map<String, String> pricesByBarcode) {
+        public Catalog(Map<String, Double> pricesByBarcode) {
             this.pricesByBarcode = pricesByBarcode;
         }
 
-        public String findProduct(String barcode) {
+        public Double findPrice(String barcode) {
             return pricesByBarcode.get(barcode);
         }
     }
