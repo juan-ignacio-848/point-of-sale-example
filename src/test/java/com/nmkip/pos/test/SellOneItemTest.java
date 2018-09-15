@@ -17,29 +17,29 @@ public class SellOneItemTest {
     @Before
     public void setUp() {
         display = new Display();
-        sale = new Sale(display, new Catalog(new HashMap<String, Double>() {{
-            put("12345", 7.95);
-            put("23456", 12.50);
+        sale = new Sale(display, new Catalog(new HashMap<Barcode, Double>() {{
+            put(new Barcode("12345"), 7.95);
+            put(new Barcode("23456"), 12.50);
         }}));
     }
 
     @Test
     public void productFound() {
-        sale.onBarcode("12345");
+        sale.onBarcode(new Barcode("12345"));
 
         assertEquals("$7.95", display.getText());
     }
 
     @Test
     public void anotherPorudctFound() {
-        sale.onBarcode("23456");
+        sale.onBarcode(new Barcode("23456"));
 
         assertEquals("$12.50", display.getText());
     }
 
     @Test
     public void productNotFound() {
-        sale.onBarcode("99999");
+        sale.onBarcode(new Barcode("99999"));
 
         assertEquals("Product not found for 99999", display.getText());
     }
@@ -48,7 +48,7 @@ public class SellOneItemTest {
     public void emptyBarcode() {
         final Sale sale = new Sale(display, new Catalog(null));
 
-        sale.onBarcode("");
+        sale.onBarcode(new Barcode(""));
 
         assertEquals("Scanning error: empty barcode", display.getText());
     }
@@ -70,7 +70,7 @@ public class SellOneItemTest {
             this.text = currencyFormatter.format(price);
         }
 
-        public void displayProductNotFoundMessage(String barcode) {
+        public void displayProductNotFoundMessage(Barcode barcode) {
             this.text = "Product not found for " +
                     barcode;
         }
@@ -89,9 +89,9 @@ public class SellOneItemTest {
             this.catalog = catalog;
         }
 
-        public void onBarcode(String barcode) {
+        public void onBarcode(Barcode barcode) {
             // SMELL Refused bequest; move this up the call stack?
-            if ("".equals(barcode)) {
+            if (barcode.isEmpty()) {
                 display.displayEmptyBarcodeMessage();
                 return;
             }
@@ -108,14 +108,46 @@ public class SellOneItemTest {
     }
 
     public static class Catalog {
-        private final Map<String, Double> pricesByBarcode;
+        private Map<Barcode, Double> pricesByBarcode;
 
-        public Catalog(Map<String, Double> pricesByBarcode) {
+        public Catalog(Map<Barcode, Double> pricesByBarcode) {
             this.pricesByBarcode = pricesByBarcode;
         }
 
-        public Double findPrice(String barcode) {
+        public Double findPrice(Barcode barcode) {
             return pricesByBarcode.get(barcode);
+        }
+    }
+
+    public static class Barcode {
+        private String code;
+
+        public Barcode(String code) {
+            this.code = code;
+        }
+
+        public boolean isEmpty() {
+            return code.isEmpty();
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            Barcode barcode = (Barcode) o;
+
+            return code != null ? code.equals(barcode.code) : barcode.code == null;
+        }
+
+        @Override
+        public int hashCode() {
+            return code != null ? code.hashCode() : 0;
+        }
+
+        @Override
+        public String toString() {
+            return code;
         }
     }
 }
